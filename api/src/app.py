@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
-from datetime import datetime
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from typing import AsyncIterator
 
 from fastapi import FastAPI, Form, status
@@ -58,10 +59,24 @@ def post_message(name: str = Form(), message: str = Form()) -> RedirectResponse:
 
 # TODO: add another API route with a query parameter to retrieve quotes based on max age
 @app.get("/retrieve")
-def retrieve_quotes(timeframe: str):
+def retrieve_quotes(timeframe: str = 'All'):
     quotes: list[dict] = database['quotes']
+    today = datetime.now()
 
-    for quote in quotes:
-        pass
+    match timeframe:
+        case 'Week':
+            frame = today - timedelta(weeks=1)
+        case 'Month':
+            frame = today - relativedelta(month=1)
+        case 'Year':
+            frame = today - relativedelta(years=1)
+            print(frame)
+        case 'All':
+            return quotes
+    
+    filtered_quotes = [
+        quote for quote in quotes
+        if frame < datetime.strptime(quote['time'], '%Y-%m-%dT%H:%M:%S') < today
+    ]
 
-    return quotes
+    return filtered_quotes

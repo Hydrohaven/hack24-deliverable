@@ -19,22 +19,35 @@ function App() {
 			</form>
 
 			<h2>Previous Quotes</h2>
-			{/* TODO: Display the actual quotes from the database */}
-			<RetrieveQuote/>
 			<div className="messages">
-				<p>Peter Anteater</p>
-				<p>Zot Zot Zot!</p>
-				<p>Every day</p>
+				<RetrieveQuote timeframe="Week"/>
 			</div>
 		</div>
 	);
+}
+
+function CreateQuote() {
+	const [quotes, retrieve] = useState([]);
+
+	const submit = async (event) => {
+		event.preventDefault();
+
+		try {
+			const response = await fetch('api/quote', {
+				method: 'POST',
+				
+			})
+		} catch (erorr) {
+
+		}
+	}
 }
 
 function RetrieveQuote(props) {
 	const [quotes, retrieve] = useState([]);
 
 	useEffect(() => {
-		axios.get("http://127.0.0.1:8000/retrieve?timeframe=Today") // backend server
+		axios.get("http://127.0.0.1:8000/retrieve?timeframe=" + props.timeframe) // backend server
 			.then(response => {
 				retrieve(response.data);
 			})
@@ -46,8 +59,8 @@ function RetrieveQuote(props) {
 	return (
 		<div>
 			{quotes.length > 0 ? (
-				quotes.map((quote, index) => (
-				<p key={index}>From {quote.name}: {quote.message}, {quote.time}</p>
+				quotes.map((quote, index) => ( // We use map rather than for each since map returns something, foreach mutates
+				<p key={index}>From {quote.name}: "{quote.message}", {quote.time}</p>
 				))
 			) : (
 				<p>No quotes available</p>
