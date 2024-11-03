@@ -1,3 +1,5 @@
+import {useEffect, useState} from 'react'; // 
+import axios from 'axios'; // Connects FastAPI with React through URL (Like Django views)
 import "./App.css";
 
 function App() {
@@ -18,11 +20,38 @@ function App() {
 
 			<h2>Previous Quotes</h2>
 			{/* TODO: Display the actual quotes from the database */}
+			<RetrieveQuote/>
 			<div className="messages">
 				<p>Peter Anteater</p>
 				<p>Zot Zot Zot!</p>
 				<p>Every day</p>
 			</div>
+		</div>
+	);
+}
+
+function RetrieveQuote(props) {
+	const [quotes, retrieve] = useState([]);
+
+	useEffect(() => {
+		axios.get("http://127.0.0.1:8000/retrieve?timeframe=Today") // backend server
+			.then(response => {
+				retrieve(response.data);
+			})
+			.catch(error => {
+				console.error("There was an error retrieving the quotes", error)
+			})
+	}, []);
+
+	return (
+		<div>
+			{quotes.length > 0 ? (
+				quotes.map((quote, index) => (
+				<p key={index}>From {quote.name}: {quote.message}, {quote.time}</p>
+				))
+			) : (
+				<p>No quotes available</p>
+			)}
 		</div>
 	);
 }
