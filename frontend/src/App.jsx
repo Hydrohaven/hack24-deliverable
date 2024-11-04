@@ -1,8 +1,21 @@
 import {useEffect, useState} from 'react'; // 
 import axios from 'axios'; // Connects FastAPI with React through URL (Like Django views)
 import "./App.css";
+import Quote from "./Quote";
 
 function App() {
+	const [quotes, setQuotes] = useState([]);
+
+	useEffect(() => {
+		axios.get("http://127.0.0.1:8000/retrieve?timeframe=Year") // backend server
+			.then(response => {
+				setQuotes(response.data);
+			})
+			.catch(error => {
+				console.error("There was an error retrieving the quotes", error)
+			})
+	}, []);
+
 	return (
 		<div className="App">
 			{/* TODO: include an icon for the quote book */}
@@ -20,7 +33,14 @@ function App() {
 
 			<h2>Previous Quotes</h2>
 			<div className="messages">
-				<RetrieveQuote timeframe="Week"/>
+				{/* <RetrieveQuote timeframe="Year"/> */}
+				{quotes.length > 0 ? (
+					quotes.map((quote, index) => ( // We use map rather than for each since map returns something, foreach mutates
+						<Quote key={index} name={quote.name} msg={quote.message} time={quote.time}/>
+					))
+				) : (
+					<p>No quotes available</p>
+				)}
 			</div>
 		</div>
 	);
@@ -41,32 +61,6 @@ function CreateQuote() {
 
 		}
 	}
-}
-
-function RetrieveQuote(props) {
-	const [quotes, retrieve] = useState([]);
-
-	useEffect(() => {
-		axios.get("http://127.0.0.1:8000/retrieve?timeframe=" + props.timeframe) // backend server
-			.then(response => {
-				retrieve(response.data);
-			})
-			.catch(error => {
-				console.error("There was an error retrieving the quotes", error)
-			})
-	}, []);
-
-	return (
-		<div>
-			{quotes.length > 0 ? (
-				quotes.map((quote, index) => ( // We use map rather than for each since map returns something, foreach mutates
-				<p key={index}>From {quote.name}: "{quote.message}", {quote.time}</p>
-				))
-			) : (
-				<p>No quotes available</p>
-			)}
-		</div>
-	);
 }
 
 export default App;
