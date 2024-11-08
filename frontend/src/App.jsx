@@ -8,7 +8,7 @@ function App() {
 	const [quotes, setQuotes] = useState([]);
 
 	useEffect(() => {
-		axios.get("api/retrieve?timeframe=Year") // backend server
+		axios.get("api/retrieve?timeframe=All") // backend server
 			.then(response => {
 				setQuotes(response.data);
 			})
@@ -23,13 +23,16 @@ function App() {
 			<h1>Hack at UCI Tech Deliverable</h1>
 
 			<h2>Submit a quote</h2>
-			<QuoteForm/>
+			<QuoteForm quotes={quotes} setQuotes={setQuotes}/>
 
 			<h2>Previous Quotes</h2>
-			<div className="messages">
-				{/* <RetrieveQuote timeframe="Year"/> */}
+			<div className="quote-container">
 				{quotes.length > 0 ? (
-					quotes.map((quote, index) => ( // We use map rather than for each since map returns something, foreach mutates
+					// We use map rather than for each since map returns something, foreach mutates
+					// empty slice returns a copy of quotes, because calling reverse()
+					//  on the quotes array for some reason did not reverse it, even
+					//  thought consts are mutatable in javascript.
+					quotes.slice().reverse().map((quote, index) => ( 
 						<Quote key={index} name={quote.name} msg={quote.message} time={quote.time}/>
 					))
 				) : (
@@ -38,26 +41,6 @@ function App() {
 			</div>
 		</div>
 	);
-}
-
-function CreateQuote() {
-	const [quotes, retrieve] = useState([]);
-
-	const submit = async (event) => {
-		event.preventDefault();
-
-		try {
-			const response = await fetch('api/quote', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({name, message, time}),
-			});
-		} catch (error) {
-
-		}
-	}
 }
 
 export default App;

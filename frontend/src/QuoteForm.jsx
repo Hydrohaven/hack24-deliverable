@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Quote from "./Quote";
 
-function QuoteForm() {
-    const [name, setName] = useState('');
-    const [message, setMessage] = useState('');
-    const [quotes, setQuotes] = useState([]);
+function QuoteForm({ quotes, setQuotes }) {
+    const [name, setName] = useState("");
+    const [message, setMessage] = useState("");
+    // const [quotes, setQuotes] = useState([]);
     
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         try {
+            // We use FormData because FastAPI's parameters are Form() types
+            //  meaning it expects a application/x-www-form-urlencoded or multipart/form-data format
+            // This format matches how HTML forms work, whereas JSON doesn not work with Form parameters
             const formData = new FormData();
-            formData.append('name', name);
-            formData.append('message', message);
-
-            const response = axios.post('api/quote', formData, {
-                headers: { "Content-Type" : 'multipart/form-data' }
+            formData.append("name", name);
+            formData.append("message", message);
+            
+            // Python method is successfully ran, but this doesnt do anything i think
+            const response = await axios.post("api/quote", formData, {
+                headers: { "Content-Type" : "multipart/form-data" }
             });
 
             const newQuote = response.data;
-
             setQuotes([...quotes, newQuote]); // update quote list
 
             // Clear fields after submission
@@ -27,7 +31,7 @@ function QuoteForm() {
             setMessage("");
 
         } catch (error) {
-            console.error('Error submitting the quote: ', error);
+            console.error("Error submitting the quote: ", error);
         }
     };
 
