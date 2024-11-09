@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import Quote from "./Quote";
 
 function QuoteForm({ quotes, setQuotes }) {
     const [name, setName] = useState("");
@@ -37,13 +36,16 @@ function QuoteForm({ quotes, setQuotes }) {
 
     return (
         <div>
-            <form onSubmit={handleSubmit}>
-                <input type="text" placeholder="Name" value={name} 
+            <form onSubmit={handleSubmit} className="">
+                <input className="w-full p-2 border border-gray-300 rounded shadow focus:outline-none focus:ring-1 focus:ring-gray-300"
+                    type="text" placeholder="Name" value={name} 
                     onChange={(e) => setName(e.target.value)} required/>
-
-                <input type="text" placeholder="Quote" value={message} 
+        
+                <input className="w-full p-2 border border-gray-300 rounded shadow focus:outline-none focus:ring-1 focus:ring-gray-300" 
+                    type="text" placeholder="Quote" value={message} 
                     onChange={(e) => setMessage(e.target.value)} required/>
-                <button type="submit">Submit</button>
+                <br></br>
+                <button className="w-full p-2 mt-4 bg-gray-600 text-white rounded shadow hover:bg-gray-700" type="submit">Submit</button>
             </form>
         </div>
     )

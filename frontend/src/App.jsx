@@ -1,43 +1,72 @@
-import {useEffect, useState} from 'react'; // 
-import axios from 'axios'; // Connects FastAPI with React through URL (Like Django views)
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import "./App.css";
 import Quote from "./Quote";
 import QuoteForm from "./QuoteForm";
+import QuoteImage from "./img/quotebook.png";
 
 function App() {
 	const [quotes, setQuotes] = useState([]);
-
-	useEffect(() => {
-		axios.get("api/retrieve?timeframe=All") // backend server
+	const [filter, setFilter] = useState("All");
+	
+	function retrieveQuotes(filter) {
+		axios.get("api/retrieve?timeframe=" + filter)
 			.then(response => {
 				setQuotes(response.data);
 			})
 			.catch(error => {
 				console.error("There was an error retrieving the quotes", error)
 			})
-	}, []);
+	}
+
+	useEffect(() => {
+		retrieveQuotes(filter)
+	}, [filter]);
 	
+	// Define a threshold for long quotes (e.g., 100 characters)
+	const isLongQuote = (quote) => quote.message.length > 100;
+
 	return (
-		<div className="App">
-			{/* TODO: include an icon for the quote book */}
-			<h1>Hack at UCI Tech Deliverable</h1>
+		<div className="App bg-gray-100 min-h-screen flex flex-col">
+			{/* Navbar */}
+			<nav className="bg-white-800 py-4 px-8 flex items-center justify-between">
+				<img src={QuoteImage} alt="Logo" className="h-12"/>
+				<h1 className="text-2xl">Hack at UCI Tech Deliverable</h1>
+			</nav>
 
-			<h2>Submit a quote</h2>
-			<QuoteForm quotes={quotes} setQuotes={setQuotes}/>
+			{/* Main Content */}
+			<div className="flex flex-1">
+				{/* Left Section: Submit Form */}
+				<div className="w-1/4 bg-white p-6 m-4 rounded-lg shadow-md h-[60vh]">
+					<h2 className="text-xl font-semibold mb-4">Submit a Quote</h2>
+					<QuoteForm quotes={quotes} setQuotes={setQuotes}/>
+					<div className="mt-6">
+						<h3 className="text-lg font-medium mb-2">Filters</h3>
+						<div className="flex items-center justify-between">
+							<button className="px-4 py-2 bg-white-500 text-black rounded shadow hover:bg-gray-100" onClick={() => setFilter("Week")}>Week</button>
+							<button className="px-4 py-2 bg-white-500 text-black rounded shadow hover:bg-gray-100" onClick={() => setFilter("Year")}>Year</button>
+							<button className="px-4 py-2 bg-white-500 text-black rounded shadow hover:bg-gray-100" onClick={() => setFilter("Month")}>Month</button>
+							<button className="px-4 py-2 bg-white-500 text-black rounded shadow hover:bg-gray-100" onClick={() => setFilter("All")}>All</button>
+						</div>
+					</div>
+				</div>
 
-			<h2>Previous Quotes</h2>
-			<div className="quote-container">
-				{quotes.length > 0 ? (
-					// We use map rather than for each since map returns something, foreach mutates
-					// empty slice returns a copy of quotes, because calling reverse()
-					//  on the quotes array for some reason did not reverse it, even
-					//  thought consts are mutatable in javascript.
-					quotes.slice().reverse().map((quote, index) => ( 
-						<Quote key={index} name={quote.name} msg={quote.message} time={quote.time}/>
-					))
-				) : (
-					<p>No quotes available</p>
-				)}
+				{/* Right Section: Quotes */}
+				<div className="flex-1 grid grid-cols-3 gap-4 p-4">
+					{quotes.length > 0 ? (
+						quotes.slice().reverse().map((quote, index) => (
+							<Quote 
+								key={index} 
+								name={quote.name} 
+								msg={quote.message} 
+								time={quote.time} 
+								className={isLongQuote(quote) ? "col-span-2" : "col-span-1"}
+							/>
+						))
+					) : (
+						<p className="text-gray-500 col-span-3">No quotes available</p>
+					)}
+				</div>
 			</div>
 		</div>
 	);
