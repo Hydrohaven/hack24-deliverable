@@ -3,6 +3,7 @@ import axios from 'axios';
 import "./App.css";
 import Quote from "./Quote";
 import QuoteForm from "./QuoteForm";
+import FilterButton from "./FilterButton";
 import QuoteImage from "./img/quotebook.png";
 
 function App() {
@@ -24,14 +25,14 @@ function App() {
 	}, [filter]);
 	
 	// Define a threshold for long quotes (e.g., 100 characters)
-	const isLongQuote = (quote) => quote.message.length > 100;
+	const isLongQuote = (quote) => quote.message.length > 200;
 
 	return (
 		<div className="App bg-gray-100 min-h-screen flex flex-col">
 			{/* Navbar */}
 			<nav className="bg-white-800 py-4 px-8 flex items-center justify-between">
 				<img src={QuoteImage} alt="Logo" className="h-12"/>
-				<h1 className="text-2xl">Hack at UCI Tech Deliverable</h1>
+				<h1 className="text-2xl font-semibold">Hack at UCI Tech Deliverable</h1>
 			</nav>
 
 			{/* Main Content */}
@@ -43,10 +44,10 @@ function App() {
 					<div className="mt-6">
 						<h3 className="text-lg font-medium mb-2">Filters</h3>
 						<div className="flex items-center justify-between">
-							<button className="px-4 py-2 bg-white-500 text-black rounded shadow hover:bg-gray-100" onClick={() => setFilter("Week")}>Week</button>
-							<button className="px-4 py-2 bg-white-500 text-black rounded shadow hover:bg-gray-100" onClick={() => setFilter("Year")}>Year</button>
-							<button className="px-4 py-2 bg-white-500 text-black rounded shadow hover:bg-gray-100" onClick={() => setFilter("Month")}>Month</button>
-							<button className="px-4 py-2 bg-white-500 text-black rounded shadow hover:bg-gray-100" onClick={() => setFilter("All")}>All</button>
+							<FilterButton func={() => setFilter("Week")} filter="Week"/>
+							<FilterButton func={() => setFilter("Month")} filter="Month"/>
+							<FilterButton func={() => setFilter("Year")} filter="Year"/>
+							<FilterButton func={() => setFilter("All")} filter="All"/>
 						</div>
 					</div>
 				</div>

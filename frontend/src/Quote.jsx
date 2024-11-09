@@ -18,7 +18,7 @@ const Quote = (props) => {
     }
 
     return (
-        <div className={`bg-white p-4 rounded-lg shadow-md ${props.className}`}>
+        <div className={`bg-white p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-200 ${props.className}`}>
             <div className="flex justify-between">
                 <p className="font-semibold">{props.name}</p>
                 <p className="text-gray-500 text-sm">{formatDate(props.time)}</p>
